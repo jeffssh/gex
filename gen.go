@@ -4,10 +4,9 @@ package main
 
 import (
 	"encoding/base64"
+	"fmt"
 	"io/ioutil"
 	"log"
-
-	"github.com/zserge/lorca"
 )
 
 func check(e error) {
@@ -17,11 +16,10 @@ func check(e error) {
 }
 
 func main() {
-	lorca.Embed("main", "assets.go", "app/build")
-
-	data, err := ioutil.ReadFile("./app/build/index.html")
+	data, err := ioutil.ReadFile("./app/dist/build.html")
 	check(err)
 	b64data := base64.StdEncoding.EncodeToString(data)
-	err = ioutil.WriteFile("./app/build/index.html.b64", []byte(b64data), 0644)
+	fmt.Println(b64data)
+	err = ioutil.WriteFile("./app/dist/build.html.b64", []byte(b64data), 0644)
 	check(err)
 }

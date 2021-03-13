@@ -4,9 +4,13 @@ cd app
 call npm run build
 cd ..
 
-echo generating main.go and assets.go
-go generate
-set /p B64html=<.\app\build\index.html.b64
-go build -ldflags "-H windowsgui -X main.B64html=%B64html%" -o gex.exe
+echo Storing assets in bindata.go
+go-bindata.exe .\app\dist\build.html
+
+::go generate
+::set /p B64html=<.\app\dist\build.html.b64
+::go build -ldflags "-H windowsgui -X main.B64html=%B64html%" -o gex.exe
+:: go build -ldflags "-X main.B64html=%B64html%" -o gex.exe
+go build 
 
 echo build complete

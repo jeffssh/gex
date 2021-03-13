@@ -3,6 +3,7 @@ package main
 
 import (
 	"log"
+	"net/url"
 	"os"
 	"os/signal"
 	"runtime"
@@ -10,7 +11,11 @@ import (
 	"github.com/zserge/lorca"
 )
 
-var B64html string
+func check(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 
 func main() {
 	args := []string{}
@@ -18,9 +23,7 @@ func main() {
 		args = append(args, "--class=Lorca")
 	}
 	ui, err := lorca.New("", "", 480, 320, args...)
-	if err != nil {
-		log.Fatal(err)
-	}
+	check(err)
 	defer ui.Close()
 
 	// A simple way to know when UI is ready (uses body.onload event in JS)
@@ -32,8 +35,11 @@ func main() {
 	// You may also use `data:text/html,<base64>` approach to load initial HTML,
 	// e.g: ui.Load("data:text/html," + url.PathEscape(html))
 
-	ui.Load("data:text/html;base64," + B64html)
+	//ui.Load("data:text/html," + url.PathEscape(build))
 	//ui.Load("data:text/html," + editor)
+
+	html, err := Asset("app/dist/build.html")
+	ui.Load("data:text/html," + url.PathEscape(string(html)))
 
 	// You may use console.log to debug your JS code, it will be printed via
 	// log.Println(). Also exceptions are printed in a similar manner.

@@ -1,19 +1,73 @@
+
+
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <!--<TextEditor/>-->
+    <HexEditor/>
+  <!--
+    <Tabs :tabs='
+    [
+      {
+        title: "Pictures",
+        content: "Pictures content"
+      },
+      {
+        title: "Music",
+        content: "Music content. Wanna see some <a href=\"#\" data-show=\"3\">Documents</a> content?"
+      },
+      {
+        title: "Videos",
+        content: "Videos content. <a href=\"#\" data-alert=\"VIDEOS!!!\">Alert videos</a>"
+      },
+      {
+        title: "Documents",
+        content: "Documents content. Wanna see some <a href=\"#\" data-show=\"1\">Music</a> content?"
+      },   
+    ]'/>
+  -->
+
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Vue from 'vue'
+//import TextEditor from './components/TextEditor.vue'
+import HexEditor from './components/HexEditor.vue'
+//import Table from './components/Table.vue'
+
+//import Tab from './components/Tab.vue'
+//import Tabs from './components/Tabs.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    //TextEditor,
+    HexEditor
+    //Tab,
+    //Tabs
   }
 }
+
+/*
+var tabs = [
+  {
+    title: "Pictures",
+    content: "Pictures content"
+  },
+  {
+    title: "Music",
+    content: "Music content. Wanna see some <a href=\"#\" data-show=\"3\">Documents</a> content?"
+  },
+  {
+    title: "Videos",
+    content: "Videos content. <a href=\"#\" data-alert=\"VIDEOS!!!\">Alert videos</a>"
+  },
+  {
+    title: "Documents",
+    content: "Documents content. Wanna see some <a href=\"#\" data-show=\"1\">Music</a> content?"
+  },   
+];
+*/
 </script>
 
 <style>
@@ -25,4 +79,5 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
+
 </style>

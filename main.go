@@ -38,8 +38,9 @@ func main() {
 	//ui.Load("data:text/html," + url.PathEscape(build))
 	//ui.Load("data:text/html," + editor)
 
-	html, err := Asset("app/dist/build.html")
-	ui.Load("data:text/html," + url.PathEscape(string(html)))
+	//html, err := Asset("app/dist/build.html")
+	//ui.Load("data:text/html," + url.PathEscape(string(html)))
+	ui.Load("data:text/html," + url.PathEscape(string(editor)))
 
 	// You may use console.log to debug your JS code, it will be printed via
 	// log.Println(). Also exceptions are printed in a similar manner.
@@ -114,8 +115,8 @@ m.value="00";
 for(i=0;i<16;i++)
   t.innerHTML+=(0+i.toString(16)).slice(-2)+" ";
 '>
-<!-- TRUDY SPECIFIC CODE ADDED FOR THIS PROJECT -->
-<h1> ~ Trudy Intercept ~ </h1>
+<!-- GEX SPECIFIC CODE ADDED FOR THIS PROJECT -->
+<h1> Gex Intercept </h1>
 <script>
     var url = window.location.href
     var arr = url.split("/");
@@ -134,7 +135,7 @@ for(i=0;i<16;i++)
     }
 </script>
 <button onclick="sender()" id='send' disabled=true>send</button>
-<!-- END TRUDY SPECIFIC CODE -->
+<!-- END GEX SPECIFIC CODE -->
 </body>
 <table border><td><pre><td id=t><tr><td id=l width=80>00000000<td><textarea spellcheck=false id=m oninput='
 // On input, store the length of clean hex before the textarea caret in b

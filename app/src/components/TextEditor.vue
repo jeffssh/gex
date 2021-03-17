@@ -3,10 +3,10 @@
     <AceEditor 
         v-model="content" 
         @init="editorInit" 
-        lang="javascript" 
+        lang="text" 
         theme="monokai" 
         width="100%" 
-        height="200px"
+        height="600px"
         :options="{
             fontSize: 14,
             highlightActiveLine: true,

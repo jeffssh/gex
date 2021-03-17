@@ -2,75 +2,59 @@
 
 <template>
   <div id="app">
-    <!--<TextEditor/>-->
-    <HexEditor/>
-  <!--
-    <Tabs :tabs='
-    [
-      {
-        title: "Pictures",
-        content: "Pictures content"
-      },
-      {
-        title: "Music",
-        content: "Music content. Wanna see some <a href=\"#\" data-show=\"3\">Documents</a> content?"
-      },
-      {
-        title: "Videos",
-        content: "Videos content. <a href=\"#\" data-alert=\"VIDEOS!!!\">Alert videos</a>"
-      },
-      {
-        title: "Documents",
-        content: "Documents content. Wanna see some <a href=\"#\" data-show=\"1\">Music</a> content?"
-      },   
-    ]'/>
-  -->
-
+    <Tabs>
+      <Tab name="TCP Intercept" :selected="true">
+        <div style="height: 50px;">
+          <!-- https://bulma.io/documentation/elements/button/ -->
+          <buttons>
+            <button id="dark-button" class="button is-dark" style="margin-left: 10px;">Forward</button>
+            <button id="dark-button" class="button is-dark" style="margin-left: 10px;">Drop</button>
+            <button id="dark-button" class="button is-dark" style="margin-left: 10px;">Intercept is off</button>
+          </buttons>
+        </div>
+          <Tabs>
+            <Tab name="Hex Editor" :selected="true">
+              <div>
+                <HexEditor/>
+              </div>
+            </Tab>
+            <Tab name="Text Editor">
+              <TextEditor/> 
+            </Tab>
+            <Tab name="Settings">
+            </Tab>
+          </Tabs>
+      </Tab>
+      <Tab name="TCP Proxy"></Tab>
+      <Tab name="TCP Repeater"></Tab>
+    </Tabs>
   </div>
 </template>
 
 <script>
 import Vue from 'vue'
-//import TextEditor from './components/TextEditor.vue'
+import TextEditor from './components/TextEditor.vue'
 import HexEditor from './components/HexEditor.vue'
 //import Table from './components/Table.vue'
 
-//import Tab from './components/Tab.vue'
-//import Tabs from './components/Tabs.vue'
+import Tab from './components/Tab.vue'
+import Tabs from './components/Tabs.vue'
 
 export default {
   name: 'App',
   components: {
-    //TextEditor,
-    HexEditor
-    //Tab,
-    //Tabs
+    TextEditor,
+    HexEditor,
+    Tab,
+    Tabs
   }
 }
 
-/*
-var tabs = [
-  {
-    title: "Pictures",
-    content: "Pictures content"
-  },
-  {
-    title: "Music",
-    content: "Music content. Wanna see some <a href=\"#\" data-show=\"3\">Documents</a> content?"
-  },
-  {
-    title: "Videos",
-    content: "Videos content. <a href=\"#\" data-alert=\"VIDEOS!!!\">Alert videos</a>"
-  },
-  {
-    title: "Documents",
-    content: "Documents content. Wanna see some <a href=\"#\" data-show=\"1\">Music</a> content?"
-  },   
-];
-*/
 </script>
 
 <style>
+@import "css/bulma.min.css";
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -78,6 +62,12 @@ var tabs = [
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+  overflow: auto;
+}
+
+#dark-button {
+  float: left;
+  padding: 10px
 }
 
 </style>

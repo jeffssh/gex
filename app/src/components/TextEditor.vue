@@ -1,7 +1,7 @@
 <template>
   <div class="texteditor">
     <AceEditor 
-        v-model="content" 
+        v-model="internalData" 
         @init="editorInit" 
         lang="text" 
         theme="monokai" 
@@ -35,18 +35,34 @@ export default {
    components: {
     AceEditor
   },
-   methods: {
-        dataSubmit() {
-            alert("submit")
-        },
-        editorInit: function () {
-            require('brace/mode/html')                
-            require('brace/theme/monokai')
-        }
-    }/*,
+  methods: {
+      dataSubmit() {
+          alert("submit")
+      },
+      editorInit: function () {
+          require('brace/mode/html')                
+          require('brace/theme/monokai')
+      }
+  },
   props: {
     data: String
-  }*/
+  },
+  /*
+  data(){ 
+    return { internalData: this.data}  
+  },
+  */
+  computed: {
+    internalData: {
+      get() {
+        return this.data;
+      },
+      set(data) {
+        console.log("emitting packet-modified, data")
+        this.$emit('packet-modified', data)
+      }
+    }
+  }
 }
 
 </script>

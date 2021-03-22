@@ -20,6 +20,7 @@
         <div class="value" v-for="(value, valueIndex) of line" :key="(lineIndex * 16) + valueIndex" :class="{ 'active': isValueActive(lineIndex, valueIndex) }" @click="handleValueClick(valueIndex, $event)">{{value}}</div>
       </div>
     </div>
+    <!--
     <div class="interpreter" title="Data interpreter">
       <h2>Info</h2>
       <div class="offset">
@@ -172,6 +173,7 @@
         </tr>
       </table>
     </div>
+  -->
   </div>
 </div>
 </template>
@@ -193,6 +195,15 @@ export default {
   },
 
   methods: {
+    updateData(data) {
+      var buf = new ArrayBuffer(data.length); // 2 bytes for each char
+      var bufView = new Uint8Array(buf);
+      for (var i=0, strLen=data.length; i < strLen; i++) {
+        bufView[i] = data.charCodeAt(i);
+      }
+      this.dataView = new DataView(buf);
+      this.updateInterpreter();
+    },
     getRows(fn) {
       if (!this.dataView) {
         return [];
@@ -514,11 +525,17 @@ export default {
 
   }, 
   name: 'HexEditor',
-  /*
   props: {
     data: String
+  },
+  watch: {
+    data: function (val) {
+      this.updateData(val)
+    },
+  },
+  mounted() {
+    this.updateData(this.data)
   }
-  */
 }
 
 DataView.prototype.getUint64 = function (byteOffset, littleEndian) {

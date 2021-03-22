@@ -92,7 +92,7 @@ func appDistBuildHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "app/dist/build.html", size: 1456326, mode: os.FileMode(438), modTime: time.Unix(1615959385, 0)}
+	info := bindataFileInfo{name: "app/dist/build.html", size: 1456326, mode: os.FileMode(438), modTime: time.Unix(1616370753, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

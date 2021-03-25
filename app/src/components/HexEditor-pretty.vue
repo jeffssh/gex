@@ -179,8 +179,6 @@
 </template>
 
 <script>
-//console.log(this.$parent)
-//console.log(this.$parent.selected)
 export default {
   created() {
     document.addEventListener('drag', this.handleDrag);
@@ -194,29 +192,9 @@ export default {
     document.addEventListener('keydown', this.handleKey);
     document.addEventListener('wheel', this.handleWheel);
     window.addEventListener('resize', this.handleResize);
-    window.addEventListener('keypress', this.handleKeyPress);
   },
-  destroyed() {
-    window.removeEventListener('keypress', this.handleKeyPress);
-  },
+
   methods: {
-    handleKeyPress(e) {
-      let alphabet = "0123456789ABCDEF"
-      let cmd = String.fromCharCode(e.keyCode).toUpperCase();
-      if (!alphabet.includes(cmd)) {return}
-      this.input += cmd;
-      if (this.input.length == 2) {  
-        console.log(this.input)
-        console.log(this.row.current)
-        console.log(this.column)
-        console.log(this.internalData)
-        let index = this.column + this.row.current * 0x10
-        let ch = String.fromCharCode(parseInt(this.input, 16))
-        this.internalData =  this.internalData.substring(0,index) + ch +  this.internalData.substring(index+1);
-        console.log(this.internalData.substring(0,index) + ch +  this.internalData.substring(index+1))
-        this.input = ''
-      }
-    },
     updateData(data) {
       var buf = new ArrayBuffer(data.length); // 2 bytes for each char
       var bufView = new Uint8Array(buf);
@@ -490,22 +468,11 @@ export default {
         tf64be: 0,
         binary: 0,
         hex: 0
-      },
-      input: ''
+      }
     };
   },
 
   computed: {
-    internalData: {
-      get() {
-        return this.data;
-      },
-      set(data) {
-        console.log("emitting packet-modified, data")
-        console.log('emitting data from hex:', data)
-        this.$emit('packet-modified', data)
-      }
-    },
     size() {
       if (!this.dataView) {
         return 0;
@@ -568,7 +535,7 @@ export default {
   },
   mounted() {
     this.updateData(this.data)
-  },
+  }
 }
 
 DataView.prototype.getUint64 = function (byteOffset, littleEndian) {

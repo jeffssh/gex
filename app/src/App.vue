@@ -14,9 +14,9 @@
           </buttons>
         </div>
           <Tabs>
-            <Tab name="Hex Editor" :selected="true">
+            <Tab name="Hex Editor" :selected="true" v-on:click.native="clickHex()">
               <div>
-                <HexEditor :data="initdata"/>
+                <HexEditor v-on:packet-modified="updateData($event)" :data="initdata"/>
               </div>
             </Tab>
             <Tab name="Text Editor">
@@ -50,16 +50,23 @@ export default {
     Tabs
   },
     data() {
-    return { initdata: "\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC" }
+    return { initdata: "\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC", hexVisible: true }
   },
   methods: {
     say: function (msg) {
       alert(msg)
     },
     updateData: function (data) {
-      console.log(data)
+      console.log("caught new data: ", data)
       this.initdata = data
       //$refs.InterceptTextEditor.loadData(data)
+    },
+    clickHex: function () {
+      console.log("clickhex")
+      this.hexVisible=true
+    },
+    clickText: function () {
+      this.hexVisible=false
     }
   }
 }

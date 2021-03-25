@@ -12,7 +12,10 @@
             highlightActiveLine: true,
             showLineNumbers: true,
             tabSize: 4,
-            showGutter: true,
+            wrapBehavioursEnabled: true,
+            printMargin: false,
+            wrap: true,
+            indentedSoftWrap: false
         }"
         :commands="[
             {
@@ -23,7 +26,6 @@
             },
         ]"
     />
-
   </div>
 </template>
 

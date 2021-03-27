@@ -13,7 +13,8 @@
             <button id="dark-button" class="button is-dark" style="margin-left: 10px;">Intercept is off</button>
           </buttons>
         </div>
-          <Tabs>
+          
+          <!--
             <Tab name="Hex Editor" :selected="true" v-on:click.native="clickHex()">
               <div>
                 <HexEditor v-on:packet-modified="updateData($event)" :data="initdata"/>
@@ -24,7 +25,8 @@
             </Tab>
             <Tab name="Settings">
             </Tab>
-          </Tabs>
+          -->
+            <Editors :data=initdata v-on:send-to-repeater="addRepeaterTab($event)"> </Editors>
       </Tab>
       <Tab name="TCP Proxy"></Tab>
       <Tab name="TCP Repeater"></Tab>
@@ -36,6 +38,7 @@
 import Vue from 'vue'
 import TextEditor from './components/TextEditor.vue'
 import HexEditor from './components/HexEditor.vue'
+import Editors from './components/Editors.vue'
 //import Table from './components/Table.vue'
 
 import Tab from './components/Tab.vue'
@@ -44,8 +47,7 @@ import Tabs from './components/Tabs.vue'
 export default {
   name: 'App',
   components: {
-    TextEditor,
-    HexEditor,
+    Editors,
     Tab,
     Tabs
   },
@@ -53,21 +55,7 @@ export default {
     return { initdata: "\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC", hexVisible: true }
   },
   methods: {
-    say: function (msg) {
-      alert(msg)
-    },
-    updateData: function (data) {
-      console.log("caught new data: ", data)
-      this.initdata = data
-      //$refs.InterceptTextEditor.loadData(data)
-    },
-    clickHex: function () {
-      console.log("clickhex")
-      this.hexVisible=true
-    },
-    clickText: function () {
-      this.hexVisible=false
-    }
+
   }
 }
 

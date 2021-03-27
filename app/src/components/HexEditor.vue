@@ -20,160 +20,6 @@
         <div class="value" v-for="(value, valueIndex) of line" :key="(lineIndex * 16) + valueIndex" :class="{ 'active': isValueActive(lineIndex, valueIndex) }" @click="handleValueClick(valueIndex, $event)">{{value}}</div>
       </div>
     </div>
-    <!--
-    <div class="interpreter" title="Data interpreter">
-      <h2>Info</h2>
-      <div class="offset">
-        <div class="hex">{{offset.toString(16).padStart(8,'0')}} : {{size.toString(16).padStart(8,'0')}} bytes</div>
-        <div class="dec">{{offset.toString().padStart(8,'0')}} : {{size.toString().padStart(8,'0')}} bytes</div>
-      </div>
-      <h2>Data Interpreter</h2>
-      <form class="settings">
-        <div class="settings-row">
-          <fieldset class="setting endian">
-            <legend>Endianness</legend>
-            <div class="group">
-              <input id="little-endian" type="checkbox" v-model="settings.le"/>
-              <label id="little-endian-label" for="little-endian">Show little-endian</label>
-            </div>
-            <div class="group">
-              <input id="big-endian" type="checkbox" v-model="settings.be"/>
-              <label id="big-endian-label" for="little-endian">Show big-endian</label>
-            </div>
-          </fieldset>
-          <fieldset class="setting sign">
-            <legend>Signedness</legend>
-            <div class="group">
-              <input id="unsigned" type="checkbox" v-model="settings.u"/>
-              <label id="unsigned-label" for="unsigned">Show unsigned</label>
-            </div>
-            <div class="group">
-              <input id="signed" type="checkbox" v-model="settings.i"/>
-              <label id="signed-label" for="signed">Show signed</label>
-            </div>
-          </fieldset>
-          <fieldset class="setting colorize">
-            <legend>Colorize</legend>
-            <div class="group">
-              <input id="colorize" type="checkbox" v-model="settings.colorize.enabled"/>
-              <label id="colorize-label" for="colorize">Colorize</label>
-            </div>
-            <div class="group">
-              <input id="colorize-palette" type="file" @change="handlePalette"/>
-              <label class="button" id="colorize-palette-label" for="colorize-palette">Load Palette</label>
-            </div>
-          </fieldset>
-        </div>
-      </form>
-      <table>
-        <tr>
-          <th>type</th>
-          <th>value</th>
-          <th>binary</th>
-        </tr>
-        <tr class="u8" title="8-bit unsigned int" v-if="settings.u">
-          <td class="type">u8 </td>
-          <td class="value">{{interpreter.u8}}</td>
-          <td class="binary">{{interpreter.u8.toString(2).padStart(8,'0')}}</td>
-        </tr>
-        <tr class="i8" title="8-bit signed int" v-if="settings.i">
-          <td class="type">i8 </td>
-          <td class="value">{{interpreter.i8}}</td>
-          <td class="binary">{{interpreter.i8.toString(2).padStart(8,'0')}}</td>
-        </tr>
-        <tr class="u16le" title="16-bit little endian unsigned int" v-if="settings.u &amp;&amp; settings.le">
-          <td class="type">u16le </td>
-          <td class="value">{{interpreter.u16le}}</td>
-          <td class="binary">{{interpreter.u16le.toString(2).padStart(16,'0')}}</td>
-        </tr>
-        <tr class="i16le" title="16-bit little endian signed int" v-if="settings.i &amp;&amp; settings.le">
-          <td class="type">i16le </td>
-          <td class="value">{{interpreter.i16le}}</td>
-          <td class="binary">{{interpreter.i16le.toString(2).padStart(16,'0')}}</td>
-        </tr>
-        <tr class="u16be" title="16-bit big endian unsigned int" v-if="settings.u &amp;&amp; settings.be">
-          <td class="type">u16be</td>
-          <td class="value">{{interpreter.u16be}}</td>
-          <td class="binary">{{interpreter.u16be.toString(2).padStart(16,'0')}}</td>
-        </tr>
-        <tr class="i16be" title="16-bit big endian signed int" v-if="settings.i &amp;&amp; settings.be">
-          <td class="type">i16be </td>
-          <td class="value">{{interpreter.i16be}}</td>
-          <td class="binary">{{interpreter.i16be.toString(2).padStart(16,'0')}}</td>
-        </tr>
-        <tr class="u32le" title="32-bit little endian unsigned int" v-if="settings.u &amp;&amp; settings.le">
-          <td class="type">u32le </td>
-          <td class="value">{{interpreter.u32le}}</td>
-          <td class="binary">{{interpreter.u32le.toString(2).padStart(32,'0')}}</td>
-        </tr>
-        <tr class="i32le" title="32-bit little endian signed int" v-if="settings.i &amp;&amp; settings.le">
-          <td class="type">i32le</td>
-          <td class="value">{{interpreter.i32le}}</td>
-          <td class="binary">{{interpreter.i32le.toString(2).padStart(32,'0')}}</td>
-        </tr>
-        <tr class="u32be" title="32-bit big endian unsigned int" v-if="settings.u &amp;&amp; settings.be">
-          <td class="type">u32be</td>
-          <td class="value">{{interpreter.u32be}}</td>
-          <td class="binary">{{interpreter.u32be.toString(2).padStart(32,'0')}}</td>
-        </tr>
-        <tr class="i32be" title="32-bit big endian signed int" v-if="settings.i &amp;&amp; settings.be">
-          <td class="type">i32be</td>
-          <td class="value">{{interpreter.i32be}}</td>
-          <td class="binary">{{interpreter.i32be.toString(2).padStart(32,'0')}}</td>
-        </tr>
-        <tr class="f32le" title="32-bit little endian float" v-if="settings.le">
-          <td class="type">f32le </td>
-          <td class="value">{{interpreter.f32le}}</td>
-          <td class="binary">{{interpreter.u32le.toString(2).padStart(32,'0')}}</td>
-        </tr>
-        <tr class="f32be" title="32-bit big endian float" v-if="settings.be">
-          <td class="type">f32be</td>
-          <td class="value">{{interpreter.f32be}}</td>
-          <td class="binary">{{interpreter.u32be.toString(2).padStart(32,'0')}}</td>
-        </tr>
-        <tr class="f64le" title="64-bit little endian float" v-if="settings.le">
-          <td class="type">f64le </td>
-          <td class="value">{{interpreter.f64le}}</td>
-          <td class="binary">--</td>
-        </tr>
-        <tr class="f64be" title="64-bit big endian float" v-if="settings.be">
-          <td class="type">f64be</td>
-          <td class="value">{{interpreter.f64be}}</td>
-          <td class="binary">--</td>
-        </tr>
-        <tr class="tu32le" title="32-bit little endian time (unsigned int 32)" v-if="settings.le">
-          <td class="type">tu32le</td>
-          <td class="value">{{interpreter.tu32le}}</td>
-          <td class="binary">--</td>
-        </tr>
-        <tr class="tu32be" title="32-bit big endian time (unsigned int 32)" v-if="settings.be">
-          <td class="type">tu32be</td>
-          <td class="value">{{interpreter.tu32be}}</td>
-          <td class="binary">--</td>
-        </tr>
-        <tr class="tf32le" title="32-bit little endian time (float 32)" v-if="settings.le">
-          <td class="type">tf32le</td>
-          <td class="value">{{interpreter.tf32le}}</td>
-          <td class="binary">--</td>
-        </tr>
-        <tr class="tf32be" title="32-bit big endian time (float 32)" v-if="settings.be">
-          <td class="type">tf32be</td>
-          <td class="value">{{interpreter.tf64be}}</td>
-          <td class="binary">--</td>
-        </tr>
-        <tr class="tf64le" title="64-bit little endian time (float 64)" v-if="settings.le">
-          <td class="type">tf64le</td>
-          <td class="value">{{interpreter.tf64le}}</td>
-          <td class="binary">--</td>
-        </tr>
-        <tr class="tf64be" title="64-bit big endian time (float 64)" v-if="settings.be">
-          <td class="type">tf64be</td>
-          <td class="value">{{interpreter.tf64be}}</td>
-          <td class="binary">--</td>
-        </tr>
-      </table>
-    </div>
-  -->
   </div>
 </div>
 </template>
@@ -201,21 +47,36 @@ export default {
   },
   methods: {
     handleKeyPress(e) {
-      let alphabet = "0123456789ABCDEF"
-      let cmd = String.fromCharCode(e.keyCode).toUpperCase();
-      if (!alphabet.includes(cmd)) {return}
-      this.input += cmd;
-      if (this.input.length == 2) {  
-        console.log(this.input)
-        console.log(this.row.current)
-        console.log(this.column)
-        console.log(this.internalData)
-        let index = this.column + this.row.current * 0x10
-        let ch = String.fromCharCode(parseInt(this.input, 16))
-        this.internalData =  this.internalData.substring(0,index) + ch +  this.internalData.substring(index+1);
-        console.log(this.internalData.substring(0,index) + ch +  this.internalData.substring(index+1))
-        this.input = ''
+      // handle ctrl + keys
+      let inKey = String.fromCharCode(e.keyCode).toUpperCase();
+      console.log(inKey)
+      switch(inKey) {
+      case "R": {
+        // ctrl + r (repeater)
+        alert('repeater')
+        break;
       }
+      default: {
+        // code block
+        // handle byte insertion
+        let alphabet = "0123456789ABCDEF"
+        if (!alphabet.includes(inKey)) {return}
+        this.input += inKey;
+        if (this.input.length == 2) {  
+          console.log(this.input)
+          console.log(this.row.current)
+          console.log(this.column)
+          console.log(this.internalData)
+          let index = this.column + this.row.current * 0x10
+          let ch = String.fromCharCode(parseInt(this.input, 16))
+          this.internalData =  this.internalData.substring(0,index) + ch +  this.internalData.substring(index+1);
+          console.log(this.internalData.substring(0,index) + ch +  this.internalData.substring(index+1))
+          this.input = ''
+        }
+      }
+    }
+
+
     },
     updateData(data) {
       var buf = new ArrayBuffer(data.length); // 2 bytes for each char

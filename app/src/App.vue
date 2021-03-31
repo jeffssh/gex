@@ -6,7 +6,7 @@
     <Tabs>
       <Tab name="TCP Intercept" :selected="true" ref="intercept">
         <div style="height: 50px;">
-          <!-- https://bulma.io/documentation/elements/button/ -->
+          <!-- https://bulma.io/documentation/elements/button/ --> 
           <buttons>
             <button id="dark-button" class="button is-dark" style="margin-left: 10px;">Forward</button>
             <button id="dark-button" class="button is-dark" style="margin-left: 10px;">Drop</button>

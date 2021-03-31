@@ -2,6 +2,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/url"
 	"os"
@@ -39,7 +40,12 @@ func main() {
 	//ui.Load("data:text/html," + editor)
 
 	html, err := Asset("app/dist/build.html")
-	ui.Load("data:text/html," + url.PathEscape(string(html)))
+	check(err)
+	uiContents := "data:text/html," + url.PathEscape(string(html))
+	fmt.Println(uiContents)
+	//uiContents = "data:text/html," + url.PathEscape("<html><i>test</i></html>")
+	err = ui.Load(uiContents)
+	check(err)
 	//ui.Load("data:text/html," + url.PathEscape(string(editor)))
 
 	// You may use console.log to debug your JS code, it will be printed via

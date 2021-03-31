@@ -60,13 +60,11 @@ export default {
         return this.data;
       },
       set(data) {
-        console.log("emitting packet-modified, data")
         this.$emit('packet-modified', data)
       }
     }
   }
 }
-
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

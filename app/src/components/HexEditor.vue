@@ -47,13 +47,12 @@ export default {
   },
   methods: {
     handleKeyPress(e) {
-      // handle ctrl + keys
+      // handle keys
       let inKey = String.fromCharCode(e.keyCode).toUpperCase();
-      console.log(inKey)
       switch(inKey) {
       case "R": {
-        // ctrl + r (repeater)
-        alert('repeater')
+        // r (repeater)
+        this.$emit('send-to-repeater', this.internalData)
         break;
       }
       default: {
@@ -63,10 +62,6 @@ export default {
         if (!alphabet.includes(inKey)) {return}
         this.input += inKey;
         if (this.input.length == 2) {  
-          console.log(this.input)
-          console.log(this.row.current)
-          console.log(this.column)
-          console.log(this.internalData)
           let index = this.column + this.row.current * 0x10
           let ch = String.fromCharCode(parseInt(this.input, 16))
           this.internalData =  this.internalData.substring(0,index) + ch +  this.internalData.substring(index+1);
@@ -362,8 +357,6 @@ export default {
         return this.data;
       },
       set(data) {
-        console.log("emitting packet-modified, data")
-        console.log('emitting data from hex:', data)
         this.$emit('packet-modified', data)
       }
     },

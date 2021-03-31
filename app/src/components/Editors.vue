@@ -5,11 +5,11 @@
     <Tabs>
       <Tab name="Hex Editor" :selected="true">
         <div>
-          <HexEditor v-on:packet-modified="updateData($event)" :data="data"/>
+          <HexEditor v-on:send-to-repeater="addRepeaterTab($event)" v-on:packet-modified="updateData($event)" :data="data"/>
         </div>
       </Tab>
       <Tab name="Text Editor">
-        <TextEditor v-on:packet-modified="updateData($event)" :data="data"/> 
+        <TextEditor v-on:send-to-repeater="addRepeaterTab($event)" v-on:packet-modified="updateData($event)" :data="data"/> 
       </Tab>
     </Tabs>
   </div>
@@ -40,6 +40,9 @@ export default {
   methods: {
     updateData: function (data) {
       this.data = data
+    },
+    addRepeaterTab(data)  {
+      this.$emit('send-to-repeater', data)
     }
   },
     computed: {
@@ -48,8 +51,6 @@ export default {
         return this.data;
       },
       set(data) {
-        console.log("emitting packet-modified, data")
-        console.log('emitting data from hex:', data)
         this.$emit('packet-modified', data)
       }
     }

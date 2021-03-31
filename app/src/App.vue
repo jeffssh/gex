@@ -4,7 +4,7 @@
   <div id="app">
     <button id="dark-button" class="button is-dark" style="margin-left: 10px;" :userObj="data" v-on:click="updateData('AAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDD')">Send Packet</button>
     <Tabs>
-      <Tab name="TCP Intercept" :selected="true">
+      <Tab name="TCP Intercept" :selected="true" ref="intercept">
         <div style="height: 50px;">
           <!-- https://bulma.io/documentation/elements/button/ -->
           <buttons>
@@ -29,7 +29,9 @@
             <Editors :data=initdata v-on:send-to-repeater="addRepeaterTab($event)"> </Editors>
       </Tab>
       <Tab name="TCP Proxy"></Tab>
-      <Tab name="TCP Repeater"></Tab>
+      <Tab name="TCP Repeater">
+        <Repeater :repeaterTabs="repeaterTabs"></Repeater>
+      </Tab>
     </Tabs>
   </div>
 </template>
@@ -43,19 +45,41 @@ import Editors from './components/Editors.vue'
 
 import Tab from './components/Tab.vue'
 import Tabs from './components/Tabs.vue'
+import Repeater from './components/Repeater.vue'
 
 export default {
   name: 'App',
   components: {
     Editors,
     Tab,
-    Tabs
+    Tabs,
+    Repeater
   },
     data() {
-    return { initdata: "\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC", hexVisible: true }
+    return { 
+      initdata: "AAAA",//"\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC",
+      repeaterTabs: new Map(),
+      numTabs: 0
+    }
   },
   methods: {
-
+    addRepeaterTab(data)  {
+      this.repeaterTabs.set(++this.numTabs, data)      
+      /*
+      let TabClass = Vue.extend(Tab)
+      let e = new TabClass(
+        {
+            propsData: { 
+              name: "test",//this.repeaterTabs.length,
+              selected: true,
+              data: data 
+            }
+        }
+      )
+      e.$slots.default = [ 'Click me!' ]
+      this.repeaterTabs.push(e)
+      */
+    }
   }
 }
 

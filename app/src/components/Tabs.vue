@@ -8,7 +8,7 @@
         </ul>
       </div>
 
-      <div class="tabs-details">
+      <div class="tabs-details"> 
         <slot></slot>
       </div>
     </div>
@@ -17,17 +17,20 @@
 <script>
 export default {
   name: 'Tabs',
-   data() {
-    return { tabs: [] }
-  },
-  created() {
-    this.tabs = this.$children;
+  data() {
+    return { tabs: [], useChildren: {default: true} }
   },
   methods: {
     selectTab: function(selectedTab) {
       this.tabs.forEach(tab => {
         tab.isActive = (tab.name == selectedTab.name);
       });
+    }
+  },
+  mounted() {
+    //console.log('in tabs mount')
+    if (this.useChildren) {
+      this.tabs = this.$children;
     }
   }
 }

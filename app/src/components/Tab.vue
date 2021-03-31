@@ -9,7 +9,8 @@ export default {
   name: 'Tab',
   props: {
     name: { required: true },
-    selected: { default: false }
+    selected: { default: false },
+    data: { default: '' }
   },
   data() {
     return { isActive: false }

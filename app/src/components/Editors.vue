@@ -5,11 +5,11 @@
     <Tabs>
       <Tab name="Hex Editor" :selected="true">
         <div>
-          <HexEditor v-on:send-to-repeater="addRepeaterTab($event)" v-on:packet-modified="updateData($event)" :data="data"/>
+          <HexEditor v-on:send-to-repeater="addRepeaterTab($event)" v-on:packet-modified="updateData($event)" :data="internalData"/>
         </div>
       </Tab>
       <Tab name="Text Editor">
-        <TextEditor v-on:send-to-repeater="addRepeaterTab($event)" v-on:packet-modified="updateData($event)" :data="data"/> 
+        <TextEditor v-on:send-to-repeater="addRepeaterTab($event)" v-on:packet-modified="updateData($event)" :data="internalData"/> 
       </Tab>
     </Tabs>
   </div>
@@ -32,33 +32,29 @@ export default {
   props: {
     data: String
   },
- /*
- data() {
-    return { data: "\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC", hexVisible: true }
-  },
-*/
   methods: {
     updateData: function (data) {
-      this.data = data
+      // TODO need to emit here instead of modify
+      this.$emit('packet-modified', data)
+      //this.data = data
     },
     addRepeaterTab(data)  {
       this.$emit('send-to-repeater', data)
     }
   },
-    computed: {
-      internalData: {
+  computed: {
+    internalData: {
       get() {
-        return this.data;
+        //console.log(this.data.repeat(1))
+        //console.log(this.data)
+        return this.data.repeat(1)//Object.assign("", this.data)
       },
-      set(data) {
-        this.$emit('packet-modified', data)
-      }
     }
   }
 }
 
 </script>
 
-<style>
+<style scoped>
 
 </style>

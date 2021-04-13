@@ -65,7 +65,7 @@ export default {
           let index = this.column + this.row.current * 0x10
           let ch = String.fromCharCode(parseInt(this.input, 16))
           this.internalData =  this.internalData.substring(0,index) + ch +  this.internalData.substring(index+1);
-          console.log(this.internalData.substring(0,index) + ch +  this.internalData.substring(index+1))
+          //console.log(this.internalData.substring(0,index) + ch +  this.internalData.substring(index+1))
           this.input = ''
         }
       }

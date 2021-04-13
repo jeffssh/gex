@@ -2,35 +2,25 @@
 
 <template>
   <div id="app">
+    <!--
+    <button id="ws-test" class="button is-dark" style="margin-left: 10px;"  v-on:click="websocketSend(interData)">ws test</button>
     <button id="dark-button" class="button is-dark" style="margin-left: 10px;" :userObj="data" v-on:click="updateData('AAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDDAAAABBBBCCCCDDDD')">Send Packet</button>
+    -->
     <Tabs>
       <Tab name="TCP Intercept" :selected="true" ref="intercept">
         <div style="height: 50px;">
           <!-- https://bulma.io/documentation/elements/button/ --> 
           <buttons>
-            <button id="dark-button" class="button is-dark" style="margin-left: 10px;">Forward</button>
-            <button id="dark-button" class="button is-dark" style="margin-left: 10px;">Drop</button>
-            <button id="dark-button" class="button is-dark" style="margin-left: 10px;">Intercept is off</button>
+            <button id="dark-button" class="button is-dark" style="margin-left: 10px;" v-on:click="forwardPacket()">Forward</button>
+            <button id="dark-button" class="button is-dark" style="margin-left: 10px;" v-on:click="dropPacket()">Drop</button>
+            <button id="dark-button" class="button is-dark" style="margin-left: 10px;" v-on:click="toggleIntercept()">Intercept is {{intercept  ? "on" : "off"}} | Queue: {{packetQueue.length}}</button>
           </buttons>
         </div>
-          
-          <!--
-            <Tab name="Hex Editor" :selected="true" v-on:click.native="clickHex()">
-              <div>
-                <HexEditor v-on:packet-modified="updateData($event)" :data="initdata"/>
-              </div>
-            </Tab>
-            <Tab name="Text Editor">
-              <TextEditor v-on:packet-modified="updateData($event)" :data="initdata"/> 
-            </Tab>
-            <Tab name="Settings">
-            </Tab>
-          -->
-            <Editors :data=initdata v-on:send-to-repeater="addRepeaterTab($event)"> </Editors>
+        <Editors v-on:packet-modified="updateData($event)" :data=interData v-on:send-to-repeater="addRepeaterTab($event)"> </Editors>
       </Tab>
-      <Tab name="TCP Proxy"></Tab>
+      <!--<Tab name="TCP Proxy"></Tab>-->
       <Tab name="TCP Repeater">
-        <Repeater :repeaterTabs="repeaterTabs"></Repeater>
+        <Repeater :repeaterTabs="repeaterTabs" :ws=ws></Repeater>
       </Tab>
     </Tabs>
   </div>
@@ -55,30 +45,81 @@ export default {
     Tabs,
     Repeater
   },
-    data() {
+  data() {
     return { 
-      initdata: "AAAA",//"\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC",
+      interData: "",
       repeaterTabs: new Map(),
-      numTabs: 0
+      numTabs: 0,
+      ws: null,
+      intercept: false,
+      shownOnePacket: false,
+      packetQueue: [],
     }
+  },
+  created () {
+    var ws_url = "ws://127.0.0.1:8081/ws"
+    this.ws = new WebSocket(ws_url)
+    this.ws.binaryType = "arraybuffer"
+    this.ws.onmessage = this.websocketRecv
   },
   methods: {
     addRepeaterTab(data)  {
       this.repeaterTabs.set(++this.numTabs, data)      
-      /*
-      let TabClass = Vue.extend(Tab)
-      let e = new TabClass(
-        {
-            propsData: { 
-              name: "test",//this.repeaterTabs.length,
-              selected: true,
-              data: data 
-            }
+    },
+    updateData: function(data) {
+      this.interData = data == undefined ? "" : data
+    },
+    getNextInQueue: function() {
+      this.updateData(this.packetQueue.pop())
+    },
+    dropPacket: function() {
+      if(!this.packetQueue.length) {
+        this.shownOnePacket = false
+      }
+      this.getNextInQueue()
+    },
+    forwardPacket: function() {
+      if(this.interData != "") {
+        this.websocketSend(this.interData);
+      }
+      if(!this.packetQueue.length) {
+        this.shownOnePacket = false
+      }
+      this.getNextInQueue()
+    },
+    toggleIntercept: function() {
+      this.intercept = !this.intercept
+      this.updateData(undefined)
+      if(this.intercept) { 
+        this.shownOnePacket = false
+        this.getNextInQueue() 
+      } else {
+        if(this.interData != "") {
+          this.websocketSend(this.interData);
         }
-      )
-      e.$slots.default = [ 'Click me!' ]
-      this.repeaterTabs.push(e)
-      */
+        while(this.packetQueue.length){
+          this.websocketSend(this.packetQueue.pop())
+        }
+      }
+    },
+    websocketSend: function(data) {
+      var buf = new ArrayBuffer(data.length)
+      var bufView = new Uint8Array(buf)
+      for (var i=0, strLen=data.length; i < strLen; i++) {
+        bufView[i] = data.charCodeAt(i)
+      }
+      this.ws.send(buf)
+    },
+    websocketRecv (event) {
+        var s = String.fromCharCode.apply(null, new Uint8Array(event.data))
+        this.packetQueue.push(s)
+        if(this.intercept && !this.shownOnePacket) { 
+          this.shownOnePacket = true
+          this.getNextInQueue()
+        }
+        if(!this.intercept) {
+          this.websocketSend(this.packetQueue.pop())
+        }
     }
   }
 }
@@ -96,11 +137,12 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
   overflow: auto;
+  width: 100%;
+  overflow: hidden;
 }
 
 #dark-button {
   float: left;
   padding: 10px
 }
-
 </style>

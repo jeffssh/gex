@@ -16,4 +16,5 @@
 
 refs/
 app/node_modules/
-app.
+app
+bin/

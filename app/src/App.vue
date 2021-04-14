@@ -57,7 +57,7 @@ export default {
     }
   },
   created () {
-    var ws_url = "ws://127.0.0.1:8081/ws"
+    var ws_url = "ws://" + window.location.href.split("/")[2] + "/ws"
     this.ws = new WebSocket(ws_url)
     this.ws.binaryType = "arraybuffer"
     this.ws.onmessage = this.websocketRecv
@@ -89,17 +89,18 @@ export default {
     },
     toggleIntercept: function() {
       this.intercept = !this.intercept
-      this.updateData(undefined)
       if(this.intercept) { 
         this.shownOnePacket = false
         this.getNextInQueue() 
       } else {
         if(this.interData != "") {
+          console.log("sending current intercept data")
           this.websocketSend(this.interData);
         }
         while(this.packetQueue.length){
           this.websocketSend(this.packetQueue.pop())
         }
+        this.updateData(undefined)
       }
     },
     websocketSend: function(data) {

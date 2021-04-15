@@ -16,7 +16,7 @@ func check(err error) {
 }
 
 type PayLoad struct {
-    Content string
+	Content string
 }
 
 func main() {
@@ -32,7 +32,7 @@ func main() {
 	}()
 
 	go func() {
-		buff := make([]byte, 65536)
+		buff := make([]byte, 2<<16)
 		for {
 			bytesRead, err := rr.Read(buff)
 			data := buff[:bytesRead]
@@ -41,7 +41,7 @@ func main() {
 
 		}
 	}()
-	g, err := gex.New(lr, rw)
+	g, err := gex.New(lr, rw, 2<<16)
 	check(err)
 	if g == nil {
 		fmt.Println("g is nil")

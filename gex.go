@@ -21,11 +21,11 @@ type Gex struct {
 	upgrader      *websocket.Upgrader
 	listener      net.Listener
 	router        *mux.Router
+	buffSize      int
 }
 
 func (g *Gex) checkFatal(err error) {
 	if err != nil {
-		log.Printf("[GEX] Fatal error: %v\n", err)
 		g.Close()
 	}
 }
@@ -40,6 +40,7 @@ func (g *Gex) Close() {
 		}
 		if g.websocketConn != nil {
 			g.websocketConn.Close()
+			g.websocketConn = nil
 		}
 		if g.listener != nil {
 			g.listener.Close()
@@ -76,7 +77,7 @@ func (g *Gex) pipeWsToWriter() {
 }
 
 func (g *Gex) pipeReaderToWs() {
-	buff := make([]byte, 65536)
+	buff := make([]byte, g.buffSize)
 	for {
 		bytesRead, err := g.r.Read(buff)
 		g.checkFatal(err)
@@ -92,7 +93,7 @@ func (g *Gex) pipeReaderToWs() {
 		}
 		_, err = g.w.Write(data)
 		if err != nil {
-			g.checkFatal(err)
+			g.Close()
 			return
 		}
 	}
@@ -109,8 +110,18 @@ func (g *Gex) upgradeWebsocket(w http.ResponseWriter, r *http.Request) {
 	log.Printf("[GEX] Editor connected over ws://")
 }
 
+/*
+func (g *Gex) UpdatePipes(r *io.PipeReader, w *io.PipeWriter) {
+	g.ClosePipes()
+	g.r = r
+	g.w = w
+	if w != nil && r != nil {
+		go g.pipeReaderToWs()
+	}
+}
+*/
+
 func New(r *io.PipeReader, w *io.PipeWriter, buffSize int) (g *Gex, err error) {
-	log.Printf("hi from new!\n")
 	var once sync.Once
 	html, err := Asset("app/dist/build.html")
 	if err != nil {
@@ -125,7 +136,7 @@ func New(r *io.PipeReader, w *io.PipeWriter, buffSize int) (g *Gex, err error) {
 	upgrader := &websocket.Upgrader{ReadBufferSize: buffSize, WriteBufferSize: buffSize}
 	router := mux.NewRouter()
 
-	g = &Gex{r, w, nil, &once, string(html), upgrader, listener, router}
+	g = &Gex{r, w, nil, &once, string(html), upgrader, listener, router, buffSize}
 	s := router.MatcherFunc(func(r *http.Request, rm *mux.RouteMatch) bool {
 		// deny any host besides 127.0.0.1:*
 		// to prevent DNS rebinding and cross-site websocket hijacking
@@ -134,8 +145,8 @@ func New(r *io.PipeReader, w *io.PipeWriter, buffSize int) (g *Gex, err error) {
 	s.HandleFunc("/", g.serveApp).Methods(http.MethodGet)
 	s.HandleFunc("/ws", g.upgradeWebsocket).Methods(http.MethodGet)
 
-	go g.pipeReaderToWs()
+	if g.w != nil && g.r != nil {
+		go g.pipeReaderToWs()
+	}
 	return
 }
-
-// todo fix queue order bug in intercept

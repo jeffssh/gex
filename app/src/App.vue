@@ -113,7 +113,7 @@ export default {
     },
     websocketRecv (event) {
         var s = String.fromCharCode.apply(null, new Uint8Array(event.data))
-        this.packetQueue.push(s)
+        this.packetQueue.unshift(s)
         if(this.intercept && !this.shownOnePacket) { 
           this.shownOnePacket = true
           this.getNextInQueue()

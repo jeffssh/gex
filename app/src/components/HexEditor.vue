@@ -407,7 +407,16 @@ export default {
     },
 
     ascii() {
-      return this.getRows(value => value >= 32 && value <= 127 ? String.fromCharCode(value) : '.');
+      return this.getRows(function(value) {
+          if (value == 0x20) { 
+            //NARROW NO-BREAK SPACE hack
+            return  "\u202F" 
+          } 
+          else {
+            return value >= 32 && value <= 127 ? String.fromCharCode(value) : '.'
+          }
+        }
+      );
     }
 
   }, 

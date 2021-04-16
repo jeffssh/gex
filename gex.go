@@ -1,6 +1,7 @@
 package gex
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net"
@@ -30,7 +31,6 @@ func (g *Gex) checkFatal(err error) {
 }
 
 func (g *Gex) Close() {
-
 	g.once.Do(func() {
 		if g.r != nil {
 			g.r.Close()
@@ -44,18 +44,58 @@ func (g *Gex) Close() {
 		if g.listener != nil {
 			g.listener.Close()
 		}
+		fmt.Printf("[GEX] Shutting down gex\n")
 	})
+	// should i return an error here?
 }
 
 func (g *Gex) serveApp(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, string(g.html))
 }
 
-func (g *Gex) Serve() {
+func (g *Gex) Serve() (err error) {
 	url := "http://" + g.listener.Addr().String()
 	log.Printf("[GEX] Serving editor at: %s\n", url)
-	err := http.Serve(g.listener, g.router)
+	err = http.Serve(g.listener, g.router)
 	g.checkFatal(err)
+	return
+}
+
+func (g *Gex) pipeWsToWriter() {
+	for {
+		if g.websocketConn == nil {
+			break
+		}
+		_, data, err := g.websocketConn.ReadMessage()
+		if err != nil {
+			break
+		}
+		_, err = g.w.Write(data)
+		g.checkFatal(err)
+	}
+}
+
+func (g *Gex) pipeReaderToWs() {
+	buff := make([]byte, 65536)
+	for {
+		bytesRead, err := g.r.Read(buff)
+		g.checkFatal(err)
+		data := buff[:bytesRead]
+		if g.websocketConn != nil {
+			err := g.websocketConn.WriteMessage(websocket.BinaryMessage, data)
+			if err == nil {
+				continue
+			} else {
+				// ws disconnected
+				g.websocketConn = nil
+			}
+		}
+		_, err = g.w.Write(data)
+		if err != nil {
+			g.checkFatal(err)
+			return
+		}
+	}
 }
 
 func (g *Gex) upgradeWebsocket(w http.ResponseWriter, r *http.Request) {
@@ -65,23 +105,12 @@ func (g *Gex) upgradeWebsocket(w http.ResponseWriter, r *http.Request) {
 		log.Printf("[GEX] Could not upgrade websocket connection.")
 		return
 	}
-	go func() {
-		for {
-			if g.websocketConn == nil {
-				break
-			}
-			_, data, err := g.websocketConn.ReadMessage()
-			if err != nil {
-				break
-			}
-			_, err = g.w.Write(data)
-			g.checkFatal(err)
-		}
-	}()
+	go g.pipeWsToWriter()
 	log.Printf("[GEX] Editor connected over ws://")
 }
 
 func New(r *io.PipeReader, w *io.PipeWriter, buffSize int) (g *Gex, err error) {
+	log.Printf("hi from new!\n")
 	var once sync.Once
 	html, err := Asset("app/dist/build.html")
 	if err != nil {
@@ -105,25 +134,8 @@ func New(r *io.PipeReader, w *io.PipeWriter, buffSize int) (g *Gex, err error) {
 	s.HandleFunc("/", g.serveApp).Methods(http.MethodGet)
 	s.HandleFunc("/ws", g.upgradeWebsocket).Methods(http.MethodGet)
 
-	go func() {
-		buff := make([]byte, 65536)
-		for {
-			bytesRead, err := g.r.Read(buff)
-			g.checkFatal(err)
-			data := buff[:bytesRead]
-			if g.websocketConn != nil {
-				err := g.websocketConn.WriteMessage(websocket.BinaryMessage, data)
-				if err == nil {
-					continue
-				} else {
-					// ws disconnected
-					g.websocketConn = nil
-				}
-			}
-			_, err = g.w.Write(data)
-			g.checkFatal(err)
-		}
-	}()
-
+	go g.pipeReaderToWs()
 	return
 }
+
+// todo fix queue order bug in intercept

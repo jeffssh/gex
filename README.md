@@ -10,23 +10,23 @@ which includes a new gex shim on every connection. I've also included a suppleme
 ## Example Use
 
 ```golang
-    // create two pipes, one for input and one for output
-    gexInR, gexInW := io.Pipe()
-    gexOutR, gexOutW := io.Pipe()
-    // create new gex with 2^16 buffer size
-    g, err = gex.New(gexInR, gexOutW, 2<<16)
-    if err != nil {
-        // handle
-        return
-    }
-    go func() {
-        // serve the Vue.js app
-        g.Serve()
-    }()
-    // io.Copy the left connection (client) onto the input pipe writer
-    go func() {
-        io.Copy(gexInW, connL)
-    }()
-    // io.Copy the output pipe reader to the appropriate destination
+// create two pipes, one for input and one for output
+gexInR, gexInW := io.Pipe()
+gexOutR, gexOutW := io.Pipe()
+// create new gex with 2^16 buffer size
+g, err = gex.New(gexInR, gexOutW, 2<<16)
+if err != nil {
+    // handle
+    return
+}
+go func() {
+    // serve the Vue.js app
+    g.Serve()
+}()
+// io.Copy the left connection (client) onto the input pipe writer
+go func() {
+    io.Copy(gexInW, connL)
+}()
+// io.Copy the output pipe reader to the appropriate destination
 ```
 

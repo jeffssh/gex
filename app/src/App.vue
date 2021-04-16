@@ -57,6 +57,7 @@ export default {
     }
   },
   created () {
+    document.title = "Gex"
     var ws_url = "ws://" + window.location.href.split("/")[2] + "/ws"
     this.ws = new WebSocket(ws_url)
     this.ws.binaryType = "arraybuffer"

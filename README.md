@@ -18,7 +18,7 @@ which includes a new gex shim on every connection. I've also included a suppleme
 gexInR, gexInW := io.Pipe()
 gexOutR, gexOutW := io.Pipe()
 // create new gex with 2^16 buffer size
-g, err = gex.New(gexInR, gexOutW, 2<<16)
+g, err = gex.New(gexInR, gexOutW, 1<<16)
 if err != nil {
     // handle
     return

@@ -140,7 +140,7 @@ func New(r *io.PipeReader, w *io.PipeWriter, buffSize int) (g *Gex, err error) {
 	s := router.MatcherFunc(func(r *http.Request, rm *mux.RouteMatch) bool {
 		// deny any host besides 127.0.0.1:*
 		// to prevent DNS rebinding and cross-site websocket hijacking
-		return r.Host == g.listener.Addr().String()
+		return r.Host == g.listener.Addr().String() && r.Header.Get("origin") == ""
 	}).Subrouter()
 	s.HandleFunc("/", g.serveApp).Methods(http.MethodGet)
 	s.HandleFunc("/ws", g.upgradeWebsocket).Methods(http.MethodGet)

@@ -1,6 +1,7 @@
 // Code generated for package gex by go-bindata DO NOT EDIT. (@generated)
 // sources:
 // app/dist/build.html
+// Embeds the source file into the golang binary as an asset
 package gex
 
 import (

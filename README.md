@@ -6,6 +6,10 @@ the consumer and producer for each pipe can be anything. For an example of how
 I use Gex personally, see [my fork of tcpprox](https://github.com/jeffssh/tcpprox)
 which includes a new gex shim on every connection. I've also included a supplemental test file at `cmd/test/main.go`.
 
+## Screenshots
+![Intercepting messages](https://github.com/jeffssh/gex/raw/main/imgs/intercept.png)
+![Using repeater functionality](https://github.com/jeffssh/gex/raw/main/imgs/repeater.png)
+
 
 ## Example Use
 
